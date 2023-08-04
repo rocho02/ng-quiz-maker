@@ -1,0 +1,8 @@
+<div [ngClass]="{
+  'normal': state == 'normal',
+  'selected': state == 'selected',
+  'success': state == 'success',
+  'danger': state == 'danger'
+}" (click)="onClick()" class="option" [innerHTML]="value |sanitizeHtml">
+
+</div>

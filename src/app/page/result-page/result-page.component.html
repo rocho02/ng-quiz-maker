@@ -1,0 +1,10 @@
+<h1>Results</h1>
+<ng-container *ngIf=" (questions$ | async)?.length">
+  <div *ngFor="let question of (questions$ | async)  ">
+    <app-quiz-question  [showResult]="true"  [question]="question"></app-quiz-question>
+  </div>
+  <app-quiz-result [questions]="questions$ | async"></app-quiz-result>
+</ng-container>
+<div>
+  <a [routerLink]="'/quiz'">Create a new quiz</a>
+</div>

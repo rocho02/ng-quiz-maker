@@ -1,0 +1,7 @@
+<ng-container *ngIf="question">
+  <div class="question" [innerHTML]="question.question | sanitizeHtml"></div>
+  <div class="options">
+    <app-quiz-option [state]="getOptionState(opt)"  (optionClick)="optionClicked($event)" *ngFor="let opt of question.options" [value]="opt">
+    </app-quiz-option>
+  </div>
+</ng-container>
