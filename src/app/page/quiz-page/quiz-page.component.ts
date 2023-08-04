@@ -21,6 +21,7 @@ export class QuizPageComponent implements OnInit {
 
   categories: Subject<TriviaCategory[]>;
   questions$: Subject<Question[] | null>;
+  showSubmitButton: boolean = false;
 
   difficulties: DifficultyOption[] = [
     {
@@ -92,10 +93,15 @@ export class QuizPageComponent implements OnInit {
     this.questions$
       .pipe(first())
       .subscribe(questions => {
+        this.showSubmitButton = false;
         if (questions) {
+          this.showSubmitButton = true;
           questions.forEach((question) => {
             if (value.question == question.question) {
               question.selected = value.selected;
+            }
+            if ( !question.selected ){
+              this.showSubmitButton = false;
             }
           });
         }

@@ -1,26 +1,32 @@
 .option{
-  border: 1px solid gray;
-  padding: 5px;
+  border: 1px solid green;
+  border-radius: 6px;
+  padding: 12px;
   cursor: pointer;
   margin-right: 5px;
-  &:hover{
-    background-color: gray;
-  }
+  color: green;
 }
 
 .selected{
-  background-color: lightgray;
+  background-color: green;
+  color: white;
 }
 
 .normal{
+  border: 1px solid green;
   background-color: #fff;
+  color: green;
+  &:hover{
+    background-color: green;
+    color: white;
+  }
 }
-.selected{
-  background-color: lightgray;
-}
+
 .success{
   background-color: green;
+  color: white;
 }
 .danger{
   background-color: red;
+  color: white;
 }

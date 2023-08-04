@@ -1,24 +1,24 @@
-<p>quiz-page works!</p>
+<h1>QUIZ MAKER</h1>
 <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
 
-  <select formControlName="category">
+  <select id="categorySelect" formControlName="category" >
+    <option value="" disabled  >Select a category</option>
     <option value="{{category.id}}" *ngFor="let category of categories |async " [innerHTML]="category.name | sanitizeHtml">
-
     </option>
   </select>
 
-  <select formControlName="difficulty">
+  <select id="difficultySelect" formControlName="difficulty">
     <option value="{{difficulty.value}}" *ngFor="let difficulty of difficulties ">
       {{difficulty.label}}
     </option>
   </select>
 
-  <input type="submit" value="Create">
+  <input id="createBtn" type="submit" value="Create">
 </form>
 
 <ng-container *ngIf=" (questions$ | async)?.length">
   <div *ngFor="let question of (questions$ | async)  ">
     <app-quiz-question (optionClick)="optionClicked($event)" [question]="question"></app-quiz-question>
   </div>
-  <a [routerLink]="'/result'">Results</a>
+  <a class="btn" *ngIf="showSubmitButton" [routerLink]="'/result'">Results</a>
 </ng-container>

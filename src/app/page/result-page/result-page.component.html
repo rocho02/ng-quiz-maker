@@ -3,8 +3,10 @@
   <div *ngFor="let question of (questions$ | async)  ">
     <app-quiz-question  [showResult]="true"  [question]="question"></app-quiz-question>
   </div>
-  <app-quiz-result [questions]="questions$ | async"></app-quiz-result>
+  <div class="result-bar">
+    <app-quiz-result [questions]="questions$ | async"></app-quiz-result>
+  </div>
 </ng-container>
 <div>
-  <a [routerLink]="'/quiz'">Create a new quiz</a>
+  <a  class="btn" [routerLink]="'/quiz'">Create a new quiz</a>
 </div>

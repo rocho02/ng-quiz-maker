@@ -1,0 +1,12 @@
+
+
+.result-bar{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  > *{
+    flex: 0 50%;
+    text-align: center;
+  }
+}
