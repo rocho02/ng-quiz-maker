@@ -9,7 +9,6 @@ import {
 } from "../../type/type";
 import {TriviaAPIService} from "../../service/trivia-api.service";
 import {shuffle} from "../../util";
-import {DomSanitizer} from "@angular/platform-browser";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
@@ -22,6 +21,7 @@ export class QuizPageComponent implements OnInit {
   categories: Subject<TriviaCategory[]>;
   questions$: Subject<Question[] | null>;
   showSubmitButton: boolean = false;
+  state?: 'loading' | 'error' | 'ready' ;
 
   difficulties: DifficultyOption[] = [
     {
@@ -42,8 +42,7 @@ export class QuizPageComponent implements OnInit {
 
   constructor(private db: TriviaDBService,
               private api: TriviaAPIService,
-              private fb: FormBuilder,
-              private sanitizer: DomSanitizer) {
+              private fb: FormBuilder) {
     this.categories = this.db.getCategories();
     this.questions$ = this.db.getQuestions();
 
@@ -54,9 +53,9 @@ export class QuizPageComponent implements OnInit {
 
   }
 
-  protected readonly TriviaDifficulty = TriviaDifficulty;
-
   load() {
+    this.state = 'loading';
+    this.questions$.next(null);
     this.api.getQuestions(5, this.filterForm.value.category, this.filterForm.value.difficulty, "multiple")
       .subscribe(value => {
         const questions = value.results.map((triviaQuestion): Question => {
@@ -72,11 +71,15 @@ export class QuizPageComponent implements OnInit {
           return question;
         });
         this.questions$.next(questions);
-      })
+        this.state = undefined;
+
+      },
+        () => {
+        this.state = 'error';
+        })
   }
 
   onSubmit() {
-    console.info(this.filterForm.value);
     this.load();
   }
 
