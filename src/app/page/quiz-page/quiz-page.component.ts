@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TriviaDBService} from "../../service/trivia-db.service";
-import {first, Subject} from "rxjs";
+import {Subject, Subscription, take} from "rxjs";
 import {
   DifficultyOption, OptionClick,
   Question,
@@ -16,12 +16,14 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
   templateUrl: './quiz-page.component.html',
   styleUrls: ['./quiz-page.component.scss']
 })
-export class QuizPageComponent implements OnInit {
+export class QuizPageComponent implements OnInit, OnDestroy {
 
-  categories: Subject<TriviaCategory[]>;
+  categories$: Subject<TriviaCategory[]>;
   questions$: Subject<Question[] | null>;
   showSubmitButton: boolean = false;
-  state?: 'loading' | 'error' | 'ready' ;
+  state?: 'loading' | 'error' | 'ready';
+
+  private subscriptionQuestion: Subscription | undefined = undefined;
 
   difficulties: DifficultyOption[] = [
     {
@@ -43,7 +45,7 @@ export class QuizPageComponent implements OnInit {
   constructor(private db: TriviaDBService,
               private api: TriviaAPIService,
               private fb: FormBuilder) {
-    this.categories = this.db.getCategories();
+    this.categories$ = this.db.getCategories();
     this.questions$ = this.db.getQuestions();
 
     this.filterForm = this.fb.group({
@@ -57,26 +59,29 @@ export class QuizPageComponent implements OnInit {
     this.state = 'loading';
     this.questions$.next(null);
     this.api.getQuestions(5, this.filterForm.value.category, this.filterForm.value.difficulty, "multiple")
-      .subscribe(value => {
-        const questions = value.results.map((triviaQuestion): Question => {
-          const question: Question = {
-            question: triviaQuestion.question,
-            options: [
-              triviaQuestion.correct_answer,
-              ...triviaQuestion.incorrect_answers
-            ],
-            correct: triviaQuestion.correct_answer
-          };
-          question.options = shuffle(question.options);
-          return question;
-        });
-        this.questions$.next(questions);
-        this.state = undefined;
+      .subscribe({
+          next: (value) => {
+            const questions = value.results.map((triviaQuestion): Question => {
+              const question: Question = {
+                question: triviaQuestion.question,
+                options: [
+                  triviaQuestion.correct_answer,
+                  ...triviaQuestion.incorrect_answers
+                ],
+                correct: triviaQuestion.correct_answer
+              };
+              question.options = shuffle(question.options);
+              return question;
+            });
+            this.questions$.next(questions);
+            this.state = undefined;
 
-      },
-        () => {
-        this.state = 'error';
-        })
+          },
+          error: () => {
+            this.state = 'error';
+          }
+        }
+      )
   }
 
   onSubmit() {
@@ -89,12 +94,11 @@ export class QuizPageComponent implements OnInit {
       'category': ''
     });
     this.questions$.next(null);
-
   }
 
   optionClicked(value: OptionClick) {
-    this.questions$
-      .pipe(first())
+    this.subscriptionQuestion = this.questions$
+      .pipe(take(1))
       .subscribe(questions => {
         this.showSubmitButton = false;
         if (questions) {
@@ -103,12 +107,18 @@ export class QuizPageComponent implements OnInit {
             if (value.question == question.question) {
               question.selected = value.selected;
             }
-            if ( !question.selected ){
+            if (!question.selected) {
               this.showSubmitButton = false;
             }
           });
         }
-      })
-
+      });
   }
+
+  ngOnDestroy(): void {
+    if (this.subscriptionQuestion ) {
+      this.subscriptionQuestion.unsubscribe();
+    }
+  }
+
 }

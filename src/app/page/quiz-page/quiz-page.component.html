@@ -1,9 +1,9 @@
 <h1>QUIZ MAKER</h1>
-<form *ngIf="(categories | async)?.length" [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+<form *ngIf="(categories$ | async)?.length" [formGroup]="filterForm" (ngSubmit)="onSubmit()">
 
   <select id="categorySelect" formControlName="category" >
     <option value="" disabled  >Select a category</option>
-    <option value="{{category.id}}" *ngFor="let category of categories |async " [innerHTML]="category.name | sanitizeHtml">
+    <option value="{{category.id}}" *ngFor="let category of categories$ |async " [innerHTML]="category.name | sanitizeHtml">
     </option>
   </select>
 
@@ -13,7 +13,7 @@
     </option>
   </select>
 
-  <input id="createBtn" type="submit" value="Create">
+  <input  [disabled]="!filterForm.valid" id="createBtn" type="submit" value="Create">
 </form>
 
 <ng-container *ngIf=" (questions$ | async)?.length " >
