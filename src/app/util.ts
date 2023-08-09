@@ -4,4 +4,4 @@ export function  shuffle  (array: string[])  {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
-};
+}
