@@ -20,7 +20,7 @@
   <div *ngFor="let question of (questions$ | async)  ">
     <app-quiz-question (optionClick)="optionClicked($event)" [question]="question"></app-quiz-question>
   </div>
-  <a class="btn" *ngIf="showSubmitButton" [routerLink]="'/result'">Results</a>
+  <button class="btn" *ngIf="showSubmitButton" [routerLink]="'/result'">Results</button>
 </ng-container>
 
 <div *ngIf="state == 'loading'">
